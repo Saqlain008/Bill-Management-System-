@@ -131,6 +131,23 @@ charts/PDF export work offline from the very first launch too:
    line from `android/app/src/main/AndroidManifest.xml`.
 4. Re-run `npx cap sync android`.
 
+## Continuous Integration (GitHub Actions)
+`.github/workflows/android.yml` builds a debug APK automatically on every
+push/PR to `main`/`master` (and on demand via the "Run workflow" button).
+It runs `npm install`, `npx cap sync android`, then `./gradlew assembleDebug`
+on a GitHub-hosted Ubuntu runner (which already has the Android SDK and a
+JDK preinstalled), and uploads the resulting APK as a workflow artifact
+named `milk-ledger-debug-apk`. To download it: open the workflow run under
+the repo's **Actions** tab → scroll to **Artifacts**.
+
+No secrets or keystore are required for this — Android debug builds are
+signed automatically by the Android Gradle Plugin using a debug keystore
+that Gradle generates on the runner the first time it's needed, so
+`app-debug.apk` is a normal, signed, installable APK out of the box.
+(This is separate from the `signingConfigs.release` block in
+`android/app/build.gradle`, which is for **release** builds and needs your
+own keystore + `keystore.properties`, as described above.)
+
 ## Future updates (both PWA and Android)
 1. Edit files under `www/` (same files as the standalone PWA).
 2. **Bump `CACHE_VERSION`** in `www/service-worker.js` — this makes the
